@@ -1,4 +1,4 @@
-# fluent-plugin-sstp
+# fluent-plugin-sstp, a plugin for [Fluentd](http://fluentd.org)
 
 Fluentd output plugin to send server using Sakura Script Transfer Protocol(SSTP)
 
