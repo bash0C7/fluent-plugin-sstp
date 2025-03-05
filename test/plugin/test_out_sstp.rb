@@ -14,7 +14,7 @@ class SstpOutputTest < Test::Unit::TestCase
 
   # Helper method to create driver with configuration
   def create_driver(conf)
-    Fluent::Test::Driver::Output.new(Fluent::SstpOutput).configure(conf)
+    Fluent::Test::Driver::Output.new(Fluent::Plugin::SstpOutput).configure(conf)
   end
 
   # Common test data
@@ -69,12 +69,15 @@ Charset: UTF-8
     end
   end
   
-  sub_test_case 'emit' do
-    test 'posts message via netcat command' do
+  sub_test_case 'process' do
+    test 'sends message via TCPSocket' do
       d = create_driver(default_config)
       
-      # Mock the IO.popen call to verify it's called with correct parameters
-      mock(IO).popen("nc '127.0.0.1' '9801'", 'w')
+      # Mock the TCPSocket to verify it's called with correct parameters
+      mock_socket = Object.new
+      mock(TCPSocket).new('127.0.0.1', 9801) { mock_socket }
+      mock(mock_socket).puts(anything) { true }
+      mock(mock_socket).close { true }
       
       time = event_time('2022-01-01 00:00:00')
       d.run do
