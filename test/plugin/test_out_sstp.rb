@@ -1,5 +1,6 @@
 require_relative '../helper'
 require 'fluent/plugin/out_sstp'
+require 'socket' # Added for TCPServer
 
 # Test class for SstpOutput Plugin
 class SstpOutputTest < Test::Unit::TestCase
@@ -70,18 +71,35 @@ Charset: UTF-8
     test 'sends message via TCPSocket' do
       d = create_driver(default_config)
       
-      # Mock socket using RR
-      mock_socket = Object.new
-      # TCPSocketクラスのnewメソッドをスタブ化
-      stub(TCPSocket).new('127.0.0.1', 9801) { mock_socket }
-      # mock_socketのメソッドに対する期待を設定
-      mock(mock_socket).puts(is_a(String)) { true }
-      mock(mock_socket).close { true }
+      # Start a TCP server for testing
+      server = TCPServer.new('127.0.0.1', 9801)
+      received_data = nil
+      
+      # Run a server thread that accepts one connection
+      server_thread = Thread.new do
+        begin
+          client = server.accept
+          received_data = client.readpartial(1024)
+          client.close
+        rescue => e
+          puts "Server thread error: #{e.message}"
+        end
+      end
+      
+      # Give the server some time to start
+      sleep 0.5
       
       time = event_time('2022-01-01 00:00:00')
       d.run do
         d.feed('test.metrics', time, test_record)
       end
+      
+      # Wait for server thread to process data
+      server_thread.join(2)
+      server.close
+      
+      # Check if the received message matches the expected format
+      assert_equal expected_message, received_data.force_encoding(Encoding::UTF_8)
     end
   end
 end

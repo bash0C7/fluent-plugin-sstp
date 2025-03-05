@@ -7,9 +7,9 @@ Gem::Specification.new do |spec|
   spec.authors = ["bash0C7"]
   spec.email   = ["ksb.4038.nullpointer+github@gmail.com"]
 
-  spec.summary       = %q{TODO: Write a short summary, because Rubygems requires one.}
-  spec.description   = %q{TODO: Write a longer description or delete this line.}
-  spec.homepage      = "TODO: Put your gem's website or public repo URL here."
+  spec.summary       = %q{Fluentd output plugin to send messages using Sakura Script Transfer Protocol (SSTP).}
+  spec.description   = %q{A Fluentd output plugin that enables sending messages to SSTP-compatible servers like SSP, commonly used for Japanese desktop assistants.}
+  spec.homepage      = "https://github.com/bash0C7/fluent-plugin-sstp"
   spec.license       = "Apache-2.0"
 
   spec.files         = Dir.chdir(__dir__) do
