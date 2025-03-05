@@ -1,66 +1,24 @@
+#
+# Copyright 2025- bash0C7
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+require "fluent/plugin/output"
 
 module Fluent
-  class Fluent::SstpOutput < Fluent::Output
-    Fluent::Plugin.register_output('sstp', self)
-
-    def initialize
-      super
+  module Plugin
+    class SstpOutput < Fluent::Plugin::Output
+      Fluent::Plugin.register_output("sstp", self)
     end
-
-    config_param :sstp_server, :string
-    config_param :sstp_port, :integer, :default => 9801
-    config_param :request_method, :string
-    config_param :request_version, :string
-    config_param :sender, :string
-    config_param :script_template, :string
-
-    def configure(conf)
-      super
-
-      @script = ERB.new(@script_template)
-      raise "Unsupport post_type: #{@request_method}" unless @request_method == 'NOTIFY'
-    end
-
-    def start
-      super
-    end
-
-    def shutdown
-      super
-    end
-
-    def emit(tag, es, chain)
-      es.each {|time,record|
-        message = build_message(tag, time, record)
-        post message
-      }
-
-      chain.next
-    end
-
-    def build_message tag, time, record
-      script = @script.result(binding)
-      ERB.new(<<-'EOS'
-<%= @request_method %> <%= @request_version %>
-Sender: <%= @sender %>
-Script: <%= script %>
-Charset: UTF-8
-        EOS
-      ).result(binding).gsub("\n", "\r\n")
-    end
-
-    def post(message)
-      begin
-        IO.popen("nc '#{@sstp_server}' '#{@sstp_port}'", 'w') do |io|
-          io.puts message
-        end
-      rescue IOError, EOFError, SystemCallError
-        # server didn't respond
-        $log.warn "raises exception: #{$!.class}, '#{$!.message}'"
-      end
-
-      message
-    end
-
   end
 end

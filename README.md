@@ -1,12 +1,32 @@
 # fluent-plugin-sstp
 
-Fluentd output plugin to send server using Sakura Script Transfer Protocol(SSTP)
+[Fluentd](https://fluentd.org/) output plugin to do send server using Sakura Script Transfer Protocol(SSTP)
 
-## Requirement
+TODO: write description for you plugin.
 
-nc(netcat) command
+## Installation
 
-## config
+### RubyGems
+
+```
+$ gem install fluent-plugin-sstp
+```
+
+### Bundler
+
+Add following line to your Gemfile:
+
+```ruby
+gem "fluent-plugin-sstp"
+```
+
+And then execute:
+
+```
+$ bundle
+```
+
+## Configuration
 
 ````
   type sstp
@@ -18,19 +38,13 @@ nc(netcat) command
   script_template            \0汝のあるべき姿に戻れ。<%= record['craw_card'] %>\e
 ````
 
-Support SSTP request method is `NOTIFY/1.1` only
-http://www.ooyashima.net/db/sstp.html#notify11
+## Copyright
 
-I'm expecting your contribute!
-
-## Contributing
-
-1. Fork it
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Add some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create new Pull Request
+* Copyright(c) 2025- bash0C7
+* License
+  * Apache License, Version 2.0
 
 ## releases
 
+- 2025/03/xx 0.1.0 reboot
 - 2014/01/26 0.0.0 1st release
