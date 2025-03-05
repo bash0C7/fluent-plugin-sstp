@@ -17,7 +17,7 @@ module Fluent
 
       def configure(conf)
         super
-        @script = ERB.new(@script_template)
+        @script_erb = ERB.new(@script_template)
         raise Fluent::ConfigError, "Unsupported request_method: #{@request_method}" unless @request_method == 'NOTIFY'
       end
 
@@ -29,11 +29,14 @@ module Fluent
       end
 
       def build_message(tag, time, record)
-        script = @script.result(binding)
+        # Generate the script content using the template
+        rendered_script = @script_erb.result(binding)
+        
+        # Build the complete SSTP message
         ERB.new(<<-'EOS'
 <%= @request_method %> <%= @request_version %>
 Sender: <%= @sender %>
-Script: <%= script %>
+Script: <%= rendered_script %>
 Charset: UTF-8
         EOS
         ).result(binding).gsub("\n", "\r\n")

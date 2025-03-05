@@ -1,7 +1,4 @@
-require 'test/unit'
-require 'fluent/test'
-require 'fluent/test/driver/output'
-require 'fluent/test/helpers'
+require_relative '../helper'
 require 'fluent/plugin/out_sstp'
 
 # Test class for SstpOutput Plugin
@@ -73,10 +70,12 @@ Charset: UTF-8
     test 'sends message via TCPSocket' do
       d = create_driver(default_config)
       
-      # Mock the TCPSocket to verify it's called with correct parameters
+      # Mock socket using RR
       mock_socket = Object.new
-      mock(TCPSocket).new('127.0.0.1', 9801) { mock_socket }
-      mock(mock_socket).puts(anything) { true }
+      # TCPSocketクラスのnewメソッドをスタブ化
+      stub(TCPSocket).new('127.0.0.1', 9801) { mock_socket }
+      # mock_socketのメソッドに対する期待を設定
+      mock(mock_socket).puts(is_a(String)) { true }
       mock(mock_socket).close { true }
       
       time = event_time('2022-01-01 00:00:00')
