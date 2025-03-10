@@ -13,6 +13,7 @@ module Fluent
       config_param :request_method, :string
       config_param :request_version, :string
       config_param :sender, :string
+      config_param :option, :string, default: "nodescript,notranslate"
       config_param :script_template, :string
 
       def configure(conf)
@@ -36,6 +37,7 @@ module Fluent
         ERB.new(<<-'EOS'
 <%= @request_method %> <%= @request_version %>
 Sender: <%= @sender %>
+Option: <%= @option %>
 Script: <%= rendered_script %>
 Charset: UTF-8
         EOS

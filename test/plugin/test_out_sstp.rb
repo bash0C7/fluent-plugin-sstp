@@ -28,6 +28,7 @@ class SstpOutputTest < Test::Unit::TestCase
       request_method             NOTIFY
       request_version            SSTP/1.1
       sender                     カードキャプター
+      option                     nodescript,notranslate
       script_template            \\0汝のあるべき姿に戻れ。<%= record['craw_card'] %>\\e
     ]
   end
@@ -37,6 +38,7 @@ class SstpOutputTest < Test::Unit::TestCase
     message = <<-'EOS'
 NOTIFY SSTP/1.1
 Sender: カードキャプター
+Option: nodescript,notranslate
 Script: \0汝のあるべき姿に戻れ。クロウカード！\e
 Charset: UTF-8
     EOS
@@ -51,6 +53,7 @@ Charset: UTF-8
       assert_equal 'NOTIFY', d.instance.request_method
       assert_equal 'SSTP/1.1', d.instance.request_version
       assert_equal 'カードキャプター', d.instance.sender
+      assert_equal 'nodescript,notranslate', d.instance.option
       assert_equal '\0汝のあるべき姿に戻れ。<%= record[\'craw_card\'] %>\e', d.instance.script_template
     end
   end
